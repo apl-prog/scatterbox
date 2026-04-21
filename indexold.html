@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Liberandos Archive</title>
+
+<style>
+body {
+  margin:0;
+  background:#06070a;
+  color:#eaeaea;
+  font-family: monospace;
+  overflow:hidden;
+}
+
+.field {
+  position:relative;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  cursor:grab;
+}
+
+.world {
+  position:absolute;
+  top:0;
+  left:0;
+  width:32000px;
+  height:32000px;
+  will-change: transform, opacity;
+}
+
+.record, .micro {
+  position:absolute;
+}
+
+.echo-node {
+  pointer-events: none;
+  mix-blend-mode: screen;
+  filter: brightness(0.72) contrast(1.28) saturate(0.2) blur(2.4px);
+  outline: 1px dashed rgba(170,190,255,0.18);
+}
+
+.echo-node .overlay-panel,
+.echo-node .caption-panel,
+.echo-node .micro-caption {
+  display: none;
+}
+.record {
+  width: 305px;
+}
+
+.overlay-panel {
+  padding: 8px 10px 10px;
+  color: rgba(235,235,235,0.78);
+  font-size: 10px;
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.overlay-title {
+  color: rgba(255,255,255,0.92);
+  margin-bottom: 4px;
+}
+
+.overlay-meta {
+  color: rgba(220,220,220,0.56);
+  margin-bottom: 8px;
+}
+
+.overlay-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.overlay-links a {
+  color: rgba(210,220,255,0.84);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(210,220,255,0.3);
+  padding-bottom: 1px;
+}
+
+.overlay-links a:hover {
+  color: rgba(255,255,255,0.96);
+  border-bottom-color: rgba(255,255,255,0.56);
+}
+
+.caption-panel {
+  padding: 7px 9px 9px;
+  color: rgba(235,235,235,0.78);
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.caption-title {
+  color: rgba(255,255,255,0.92);
+  margin-bottom: 3px;
+}
+
+.caption-meta {
+  color: rgba(220,220,220,0.56);
+}
+
+.micro-caption {
+  margin-top: 4px;
+  color: rgba(220,220,220,0.62);
+  font-size: 8px;
+  line-height: 1.35;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.media {
+  width:100%;
+  aspect-ratio:16/9;
+  overflow:hidden;
+}
+
+.media img, .media video {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  opacity:0.92;
+  filter: brightness(0.9) contrast(1.08);
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-drag:none;
+  background: transparent;
+}
+
+.media video[src="E9FC76C1-9221-450F-9BF1-479E8FB99CF4.mov"],
+.media video[src="MMNT_20260325_201644865.mov"],
+.media video[src="Carapace Canyons RIO restart.mov"],
+.micro video,
+.micro img {
+  object-fit: cover;
+}
+
+.media img[src="IMG_8627.JPG"],
+.micro img[src="IMG_8627.JPG"] {
+  transform: scale(0.6);
+  transform-origin: center;
+}
+
+.media img[src="FullSizeRender.jpeg"],
+.micro img[src="FullSizeRender.jpeg"] {
+  object-fit: contain;
+  background: transparent;
+}
+
+.media img[src="Screenshot 1.png"] {
+  transform: scale(1.1) rotate(-2deg);
+  transform-origin: center;
+  opacity: 0.66;
+  filter: brightness(0.8) contrast(1.14) saturate(0.76) blur(0.4px);
+}
+
+.micro {
+  width: 193px;
+  height: 240px;
+  opacity:0.5;
+}
+
+audio { display:none; }
+</style>
+</head>
+
+<body>
+
+<div class="field" id="field">
+<div class="world" id="world">
+
+<!-- CORE VIDEOS -->
+<div class="record" style="top:120px; left:120px;">
+  <div class="media">
+    <video muted loop autoplay playsinline preload="auto" poster="IMG_4147.jpeg" src="IMG_3626.mov"></video>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Captured Motion / Node 3626</div>
+    <div class="caption-meta">img_3626.mov / primary surface fragment / relay open</div>
+  </div>
+</div>
+
+<div class="record" style="top:460px; left:620px;">
+  <div class="media">
+    <video muted loop autoplay playsinline preload="auto" poster="0E3A423D-2333-44E7-B5F5-E67216349279.JPG" src="IMG_3644.mov"></video>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Captured Motion / Node 3644</div>
+    <div class="caption-meta">img_3644.mov / residual passage / image carrier active</div>
+  </div>
+</div>
+
+<div class="record" style="top:120px; left:3020px; width:360px;">
+  <div class="media">
+    <img src="Screenshot 4.png"/>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Recovered Still / Screenshot 4</div>
+    <div class="caption-meta">screenshot 4.png / upper-right relay / still surface</div>
+  </div>
+</div>
+
+<div class="record" style="top:520px; left:3200px; width:330px;">
+  <div class="media">
+    <video muted loop autoplay playsinline preload="auto" poster="IMG_4147.jpeg" src="Carapace Canyons RIO restart.mov"></video>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Captured Motion / Carapace Restart</div>
+    <div class="caption-meta">carapace canyons rio restart.mov / canyon relay / restart cycle</div>
+  </div>
+</div>
+
+<!-- NEW VIDEO -->
+<div class="record" style="top:2600px; left:500px;">
+  <div class="media">
+    <video muted loop autoplay playsinline preload="auto" poster="IMG_4147.jpeg" src="IMG_3665.mov"></video>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Captured Motion / Node 3665</div>
+    <div class="caption-meta">img_3665.mov / mid-field fragment / relay unstable</div>
+  </div>
+</div>
+
+<!-- NEW VIDEO 2 -->
+<div class="record" style="top:3200px; left:1100px;">
+  <div class="media">
+    <video muted loop autoplay playsinline preload="auto" poster="0E3A423D-2333-44E7-B5F5-E67216349279.JPG" src="E9FC76C1-9221-450F-9BF1-479E8FB99CF4.mov"></video>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Captured Motion / E9FC Relay</div>
+    <div class="caption-meta">e9fc76c1...mov / deep field motion / file residue present</div>
+  </div>
+</div>
+
+<div class="record" style="top:520px; left:1760px; width:440px; opacity:0.82;">
+  <div class="media">
+    <img src="Screenshot 1.png"/>
+  </div>
+  <div class="overlay-panel">
+    <div class="overlay-title">Scatterbox Node / Partial Surface</div>
+    <div class="overlay-meta">screenshot 1.png / relay quality unstable / archive layer 02</div>
+    <div class="overlay-links">
+      <a href="https://protocols.liberandos.com/orange/" target="_blank" rel="noopener noreferrer">orange ↗</a>
+      <a href="https://protocols.liberandos.com/phase/" target="_blank" rel="noopener noreferrer">phase ↗</a>
+    </div>
+  </div>
+</div>
+
+<div class="record" style="top:220px; left:2500px; width:430px;">
+  <div class="media">
+    <video muted loop autoplay playsinline preload="auto" poster="IMG_4147.jpeg" src="Mirrored Forest Winter Region Operator approaches.mov"></video>
+  </div>
+  <div class="overlay-panel">
+    <div class="overlay-title">Captured Motion / Mirrored Forest</div>
+    <div class="overlay-meta">operator approach / signal index drift / motion fragment active</div>
+    <div class="overlay-links">
+      <a href="https://protocols.liberandos.com/ascension/" target="_blank" rel="noopener noreferrer">ascension ↗</a>
+      <a href="https://protocols.liberandos.com/Archive/aps/" target="_blank" rel="noopener noreferrer">archive aps ↗</a>
+    </div>
+  </div>
+</div>
+
+<div class="record" style="top:1620px; left:2740px;">
+  <div class="media">
+    <img src="Screenshot 2.png"/>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Recovered Still / Screenshot 2</div>
+    <div class="caption-meta">screenshot 2.png / far-right image carrier / still relay</div>
+  </div>
+</div>
+
+<div class="record" style="top:2120px; left:3080px;">
+  <div class="media">
+    <video muted loop autoplay playsinline preload="auto" poster="IMG_4147.jpeg" src="Carapace Canyons RIO restart.mov"></video>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Captured Motion / Canyon Restart</div>
+    <div class="caption-meta">carapace canyons rio restart.mov / secondary motion relay</div>
+  </div>
+</div>
+
+<div class="record" style="top:2580px; left:3260px;">
+  <div class="media">
+    <img src="Screenshot 3.png"/>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Recovered Still / Screenshot 3</div>
+    <div class="caption-meta">screenshot 3.png / right-side fragment / partial relay</div>
+  </div>
+</div>
+
+<div class="record" style="top:3140px; left:2840px;">
+  <div class="media">
+    <video muted loop autoplay playsinline preload="auto" poster="IMG_4147.jpeg" src="IMG_4886.mov"></video>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Captured Motion / Node 4886</div>
+    <div class="caption-meta">img_4886.mov / lower-right relay / loop fragment</div>
+  </div>
+</div>
+
+<!-- STILL -->
+<div class="record" style="top:760px; left:260px; width:220px;">
+  <div class="media">
+    <img src="79641701408__ABA29C8A-09FB-4F33-A444-61EA16F68634.jpeg"/>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Recovered Still / 796417</div>
+    <div class="caption-meta">79641701408...jpeg / compressed image trace / low-band still</div>
+  </div>
+</div>
+
+<div class="record" style="top:1180px; left:40px; width:190px;">
+  <div class="media">
+    <img src="IMG_8627.JPG"/>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Recovered Still / 8627</div>
+    <div class="caption-meta">img_8627.jpg / reduced scale / left-side fragment</div>
+  </div>
+</div>
+
+<div class="record" style="top:1520px; left:420px;">
+  <div class="media">
+    <img src="IMG_4147.jpeg"/>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Recovered Still / 4147</div>
+    <div class="caption-meta">img_4147.jpeg / quiet anchor / image relay stable</div>
+  </div>
+</div>
+
+<div class="record" style="top:1460px; left:760px; width:300px; opacity:0.88;">
+  <div class="overlay-panel">
+    <div class="overlay-title">Index Drift / Link Relay</div>
+    <div class="overlay-meta">receiver engaged / duplicate fragment detected / correspondence unstable</div>
+    <div class="overlay-links">
+      <a href="https://protocols.liberandos.com/orange/" target="_blank" rel="noopener noreferrer">orange ↗</a>
+      <a href="https://protocols.liberandos.com/phase/" target="_blank" rel="noopener noreferrer">phase ↗</a>
+      <a href="https://protocols.liberandos.com/ascension/" target="_blank" rel="noopener noreferrer">ascension ↗</a>
+    </div>
+  </div>
+</div>
+
+<div class="record" style="top:1880px; left:40px; width:360px;">
+  <div class="media">
+    <img src="IMG_0053.jpeg"/>
+  </div>
+  <div class="overlay-panel">
+    <div class="overlay-title">Recovered Still / Node 0053</div>
+    <div class="overlay-meta">manual fragment / low-band image / crossfade residue present</div>
+  </div>
+</div>
+
+<div class="record" style="top:2360px; left:440px;">
+  <div class="media">
+    <video muted loop autoplay playsinline preload="auto" poster="IMG_4147.jpeg" src="IMG_0201.mov"></video>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Captured Motion / Node 0201</div>
+    <div class="caption-meta">img_0201.mov / left-channel fragment / image relay open</div>
+  </div>
+</div>
+
+<div class="record" style="top:2800px; left:40px;">
+  <div class="media">
+    <img src="FullSizeRender.jpeg"/>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Recovered Still / FullSizeRender</div>
+    <div class="caption-meta">fullsizerender.jpeg / uncropped carrier / still residue</div>
+  </div>
+</div>
+
+<!-- EXISTING VIDEOS -->
+<div class="record" style="top:2000px; left:200px;">
+  <div class="media">
+    <video muted loop autoplay playsinline preload="auto" poster="IMG_4147.jpeg" src="IMG_4261.mov"></video>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Captured Motion / Node 4261</div>
+    <div class="caption-meta">img_4261.mov / lower-left motion / relay fragment</div>
+  </div>
+</div>
+
+<div class="record" style="top:4200px; left:800px;">
+  <div class="media">
+    <video muted loop autoplay playsinline preload="auto" poster="79641701408__ABA29C8A-09FB-4F33-A444-61EA16F68634.jpeg" src="Liberandos Best small.mov"></video>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Captured Motion / Liberandos Best</div>
+    <div class="caption-meta">liberandos best small.mov / lower field relay / branded residue</div>
+  </div>
+</div>
+
+<div class="record" style="top:3680px; left:2080px;">
+  <div class="media">
+    <video muted loop autoplay playsinline preload="auto" poster="0E3A423D-2333-44E7-B5F5-E67216349279.JPG" src="video-output-AB9B6D41-E995-457B-BF63-9FCB1FB8707D.mov"></video>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Captured Motion / Video Output</div>
+    <div class="caption-meta">video-output-ab9b6d41...mov / output relay / archive export</div>
+  </div>
+</div>
+
+<div class="record" style="top:4240px; left:2620px;">
+  <div class="media">
+    <video muted loop autoplay playsinline preload="auto" poster="0E3A423D-2333-44E7-B5F5-E67216349279.JPG" src="Arctic depository RIO deploy #2.mov"></video>
+  </div>
+  <div class="caption-panel">
+    <div class="caption-title">Captured Motion / Arctic Deploy</div>
+    <div class="caption-meta">arctic depository rio deploy #2.mov / cold relay / deep archive</div>
+  </div>
+</div>
+
+<!-- MICRO SIGNALS -->
+<div class="micro" style="top:220px; left:520px;">
+  <video muted loop autoplay playsinline preload="auto" poster="IMG_4147.jpeg" src="MMNT_20260325_201644865.mov"></video>
+  <div class="micro-caption">mmnt_20260325...mov / micro relay</div>
+</div>
+
+<div class="micro" style="top:1800px; left:1000px;">
+  <video muted loop autoplay playsinline src="IMG_3626.mov"></video>
+  <div class="micro-caption">img_3626.mov / micro</div>
+</div>
+
+<div class="micro" style="top:2800px; left:200px;">
+  <video muted loop autoplay playsinline src="IMG_4121.mov"></video>
+  <div class="micro-caption">img_4121.mov / micro</div>
+</div>
+
+<div class="micro" style="top:1500px; left:1200px;">
+  <video muted loop autoplay playsinline src="IMG_3665.mov"></video>
+  <div class="micro-caption">img_3665.mov / relay</div>
+</div>
+
+<div class="micro" style="top:3500px; left:1000px;">
+  <video muted loop autoplay playsinline src="E9FC76C1-9221-450F-9BF1-479E8FB99CF4.mov"></video>
+  <div class="micro-caption">e9fc76c1...mov / relay</div>
+</div>
+
+<div class="micro" style="top:520px; left:1480px; width:82px; height:110px; opacity:0.42;">
+  <img src="IMG_8627.JPG"/>
+  <div class="micro-caption">img_8627.jpg / micro</div>
+</div>
+
+<div class="micro" style="top:1260px; left:1700px;">
+  <video muted loop autoplay playsinline preload="auto" poster="IMG_4147.jpeg" src="IMG_4886.mov"></video>
+  <div class="micro-caption">img_4886.mov / micro</div>
+</div>
+
+<div class="micro" style="top:2480px; left:1540px;">
+  <video muted loop autoplay playsinline preload="auto" poster="IMG_4147.jpeg" src="MMNT_20260325_201644865.mov"></video>
+  <div class="micro-caption">mmnt_20260325...mov / repeat relay</div>
+</div>
+
+<div class="micro" style="top:2760px; left:2860px;">
+  <video muted loop autoplay playsinline preload="auto" poster="0E3A423D-2333-44E7-B5F5-E67216349279.JPG" src="IMG_4261.mov"></video>
+  <div class="micro-caption">img_4261.mov / micro</div>
+</div>
+
+<div class="micro" style="top:4480px; left:2300px;">
+  <img src="FullSizeRender.jpeg"/>
+  <div class="micro-caption">fullsizerender.jpeg / micro</div>
+</div>
+
+<div class="micro" style="top:980px; left:1140px;">
+  <img src="Screenshot 5.png"/>
+  <div class="micro-caption">screenshot 5.png / micro</div>
+</div>
+
+<div class="micro" style="top:3380px; left:560px;">
+  <video muted loop autoplay playsinline preload="auto" poster="79641701408__ABA29C8A-09FB-4F33-A444-61EA16F68634.jpeg" src="IMG_3644.mov"></video>
+  <div class="micro-caption">img_3644.mov / micro</div>
+</div>
+
+<div class="micro" style="top:4020px; left:1500px; width:70px; height:95px; opacity:0.4;">
+  <img src="0E3A423D-2333-44E7-B5F5-E67216349279.JPG"/>
+  <div class="micro-caption">0e3a423d...jpg / micro</div>
+</div>
+
+</div>
+</div>
+
+<script>
+const field = document.getElementById("field");
+const world = document.getElementById("world");
+
+let dragging=false, startX=0, startY=0, camX=9800, camY=9800;
+const worldWidth = 32000;
+const worldHeight = 32000;
+const worldBaseWidth = 32000;
+const worldBaseHeight = 32000;
+const worldCenterOffsetX = 9800;
+const worldCenterOffsetY = 9800;
+let worldRecentered = false;
+
+field.addEventListener("pointerdown", e=>{
+  startAudio();
+  dragging=true;
+  startX=e.clientX;
+  startY=e.clientY;
+  field.setPointerCapture(e.pointerId);
+});
+
+field.addEventListener("pointermove", e=>{
+  if(!dragging) return;
+  camX -= (e.clientX-startX);
+  camY -= (e.clientY-startY);
+  startX=e.clientX;
+  startY=e.clientY;
+  renderWorld();
+  startAudio();
+});
+
+field.addEventListener("wheel", e=>{
+  e.preventDefault();
+  camX += e.deltaX;
+  camY += e.deltaY;
+  renderWorld();
+  startAudio();
+}, { passive:false });
+
+window.addEventListener("keydown", () => {
+  startAudio();
+}, { once:false });
+
+window.addEventListener("touchstart", () => {
+  startAudio();
+}, { once:false, passive:true });
+
+window.addEventListener("click", () => {
+  startAudio();
+}, { once:false });
+
+field.addEventListener("pointerup", ()=>dragging=false);
+field.addEventListener("pointercancel", ()=>dragging=false);
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function renderWorld() {
+  const currentWidth = parseFloat(world.style.width || worldBaseWidth);
+  const currentHeight = parseFloat(world.style.height || worldBaseHeight);
+  const maxX = Math.max(0, currentWidth - field.clientWidth);
+  const maxY = Math.max(0, currentHeight - field.clientHeight);
+  camX = clamp(camX, 0, maxX);
+  camY = clamp(camY, 0, maxY);
+  world.style.transform = `translate(${-camX}px, ${-camY}px)`;
+  requestCollapseUpdate();
+}
+
+function recenterWorldNodes() {
+  if (worldRecentered) return;
+  worldRecentered = true;
+
+  Array.from(document.querySelectorAll('.record, .micro')).forEach(node => {
+    const currentTop = parseFloat(node.style.top || '0');
+    const hasLeft = node.style.left && node.style.left !== '';
+    const hasRight = node.style.right && node.style.right !== '';
+
+    node.style.top = (currentTop + worldCenterOffsetY) + 'px';
+
+    if (hasLeft) {
+      const currentLeft = parseFloat(node.style.left || '0');
+      node.style.left = (currentLeft + worldCenterOffsetX) + 'px';
+    }
+
+    if (hasRight) {
+      const currentRight = parseFloat(node.style.right || '0');
+      node.style.right = 'auto';
+
+      const resolvedWidth = parseFloat(node.style.width || getComputedStyle(node).width);
+      const resolvedLeft = 3600 - resolvedWidth - currentRight;
+
+      node.style.left = (resolvedLeft + worldCenterOffsetX) + 'px';
+    }
+  });
+}
+
+renderWorld();
+setTimeout(() => {
+  recenterWorldNodes();
+  buildEchoes();
+  camX = worldCenterOffsetX - Math.round(field.clientWidth * 0.35);
+  camY = worldCenterOffsetY - Math.round(field.clientHeight * 0.25);
+  renderWorld();
+}, 20);
+
+setTimeout(() => {
+  renderWorld();
+}, 180);
+setTimeout(() => {
+  renderWorld();
+}, 520);
+
+function fadeAudio(audio, from, to, duration, done) {
+  const start = performance.now();
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    audio.volume = from + (to - from) * progress;
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else if (done) {
+      done();
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function playLayer(targetVolume) {
+  if (!dnbdPlayer) return;
+  dnbdPlayer.pause();
+  dnbdPlayer.currentTime = 0;
+  dnbdPlayer.volume = 0;
+  dnbdPlayer.play().catch(err => console.error("DNBD play failed", err));
+  fadeAudio(dnbdPlayer, 0, targetVolume, 8000, () => {
+    setTimeout(() => {
+      fadeAudio(dnbdPlayer, targetVolume, 0, 5000, () => {
+        try { dnbdPlayer.pause(); } catch(e) {}
+      });
+    }, 9000);
+  });
+}
+
+let layerInterval = null;
+
+function scheduleLayers() {
+  playLayer(0.2);
+  setTimeout(() => {
+    if (!bedPlayer) return;
+    bedPlayer.volume = 0;
+    bedPlayer.currentTime = 0;
+    bedPlayer.play().then(() => {
+      fadeAudio(bedPlayer, 0, 0.32, 12000);
+    }).catch(err => console.error("Mass bed fade-in failed", err));
+  }, 6000);
+  layerInterval = setInterval(() => {
+    playLayer(0.2);
+  }, 42000);
+}
+
+let bedPlayer = null;
+let dnbdPlayer = null;
+let audioStarted = false;
+
+function startAudio(){
+  if (audioStarted) return;
+  audioStarted = true;
+
+  bedPlayer = new Audio("mass.m4a");
+  bedPlayer.loop = true;
+  bedPlayer.preload = "auto";
+  bedPlayer.volume = 0;
+  bedPlayer.currentTime = 0;
+
+  dnbdPlayer = new Audio("dnbd.m4a");
+  dnbdPlayer.preload = "auto";
+  dnbdPlayer.volume = 0;
+  dnbdPlayer.currentTime = 0;
+
+  scheduleLayers();
+}let echoesBuilt = false;
+
+function buildEchoes() {
+  if (echoesBuilt) return;
+  echoesBuilt = true;
+
+  const baseNodes = Array.from(document.querySelectorAll('.record, .micro'))
+    .filter(el => !el.classList.contains('echo-node'));
+
+  const worldRect = world.getBoundingClientRect();
+
+  baseNodes.forEach((node, i) => {
+    const rect = node.getBoundingClientRect();
+    const baseTop = rect.top - worldRect.top;
+    const baseLeft = rect.left - worldRect.left;
+    const width = rect.width;
+    const height = rect.height;
+
+    const nearOffsets = [1600, 2200];
+    const farOffsets = [4200, 6200, 8600];
+    const directions = [
+      [1, 0], [-1, 0], [0, 1], [0, -1],
+      [1, 1], [-1, 1], [1, -1], [-1, -1]
+    ];
+
+    nearOffsets.forEach((offset, ringIndex) => {
+      const dir = directions[(i + ringIndex) % directions.length];
+      if ((i + ringIndex) % 3 !== 0) return;
+      const clone = node.cloneNode(true);
+      const scale = 0.6 + Math.random() * 1.4;
+      const jitterX = (Math.random() - 0.5) * 180;
+      const jitterY = (Math.random() - 0.5) * 160;
+
+      clone.classList.add('echo-node');
+      clone.style.right = 'auto';
+      clone.style.bottom = 'auto';
+      clone.style.left = (baseLeft + dir[0] * offset + jitterX) + 'px';
+      clone.style.top = (baseTop + dir[1] * offset + jitterY) + 'px';
+      clone.style.width = (width * scale) + 'px';
+
+      if (clone.classList.contains('micro')) {
+        clone.style.height = (height * scale) + 'px';
+      }
+
+      clone.style.opacity = String(0.26 / (ringIndex + 1));
+      clone.style.transform = `scale(${0.88 + Math.random() * 0.18}) rotate(${(-4 + Math.random() * 8).toFixed(2)}deg)`;
+
+      world.appendChild(clone);
+    });
+
+    farOffsets.forEach((offset, ringIndex) => {
+      const dir = directions[(i + ringIndex + 3) % directions.length];
+      if ((i + ringIndex) % 3 !== 0) return;
+
+      const clone = node.cloneNode(true);
+      const scale = 0.5 + Math.random() * 1.6;
+      const jitterX = (Math.random() - 0.5) * 260;
+      const jitterY = (Math.random() - 0.5) * 220;
+
+      clone.classList.add('echo-node');
+      clone.style.right = 'auto';
+      clone.style.bottom = 'auto';
+      clone.style.left = (baseLeft + dir[0] * offset + jitterX) + 'px';
+      clone.style.top = (baseTop + dir[1] * offset + jitterY) + 'px';
+      clone.style.width = (width * scale) + 'px';
+
+      if (clone.classList.contains('micro')) {
+        clone.style.height = (height * scale) + 'px';
+      }
+
+      clone.style.opacity = String(0.14 / (ringIndex + 1));
+      clone.style.transform = `scale(${0.82 + Math.random() * 0.24}) rotate(${(-8 + Math.random() * 16).toFixed(2)}deg)`;
+
+      world.appendChild(clone);
+    });
+  });
+
+  world.style.width = '32000px';
+  world.style.height = '32000px';
+}
+function applyDistanceCollapse() {
+  const viewportCenterX = window.innerWidth / 2;
+  const viewportCenterY = window.innerHeight / 2;
+  const maxDist = Math.sqrt(viewportCenterX * viewportCenterX + viewportCenterY * viewportCenterY) * 1.9;
+
+  document.querySelectorAll('.record, .micro, .echo-node').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const dx = centerX - viewportCenterX;
+    const dy = centerY - viewportCenterY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const t = Math.min(dist / maxDist, 1);
+
+    const media = el.querySelector('img, video');
+    if (!media) return;
+
+    const blur = t * 8.5;
+    const brightness = 1 - t * 0.7;
+    const contrast = 1 + t * 0.5;
+    const saturate = 1 - t * 1.6;
+    const sepia = t * 0.3;
+    const hue = (t * 6) - 3;
+    const jitterX = (Math.random() - 0.5) * t * 1.5;
+    const jitterY = (Math.random() - 0.5) * t * 1.2;
+    const scale = 1 - t * 0.08;
+    const extraEchoBlur = el.classList.contains('echo-node') ? 1.8 : 0;
+    const extraEchoScale = el.classList.contains('echo-node') ? 0.08 : 0;
+
+    media.style.filter = `brightness(${brightness}) contrast(${contrast}) saturate(${saturate}) sepia(${sepia}) blur(${blur + extraEchoBlur}px) hue-rotate(${hue}deg)`;
+    media.style.transform = `scale(${scale - extraEchoScale}) translate(${jitterX}px, ${jitterY}px)`;
+
+    const baseOpacity = el.classList.contains('echo-node') ? 0.35 : 1;
+    el.style.opacity = Math.max(0, baseOpacity - t * (el.classList.contains('echo-node') ? 0.75 : 0.6));
+
+    const dropoutChance = el.classList.contains('echo-node') ? 0.5 : 0.18;
+    if (t > 0.75 && Math.random() < dropoutChance) {
+      el.style.opacity = 0;
+    }
+
+    if (media.tagName === 'VIDEO') {
+      media.playbackRate = 1 - t * 0.35;
+      if (t > 0.6 && Math.random() < 0.05) {
+        try {
+          media.currentTime += Math.random() * 0.4;
+        } catch(e) {}
+      }
+    }
+  });
+}
+
+let collapseTicking = false;
+function requestCollapseUpdate() {
+  if (collapseTicking) return;
+  collapseTicking = true;
+  requestAnimationFrame(() => {
+    applyDistanceCollapse();
+    collapseTicking = false;
+  });
+}
+
+window.addEventListener('resize', requestCollapseUpdate);
+window.addEventListener('load', requestCollapseUpdate);
+setTimeout(requestCollapseUpdate, 300);
+setTimeout(requestCollapseUpdate, 900);
+</script>
+
+</body>
+</html>
