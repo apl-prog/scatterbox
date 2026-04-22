@@ -375,6 +375,7 @@
           kind: 'video',
           src: MEDIA.e9fc.src,
           poster: MEDIA.screenshot1.src,
+          preloadPriority: true,
           title: 'Captured Motion / Partial Surface',
           meta: 'e9fc76...mov / relay quality unstable / archive layer 02',
           size: 'medium',
@@ -390,6 +391,7 @@
           kind: 'video',
           src: MEDIA.vid3644.src,
           poster: MEDIA.screenshot1.src,
+          preloadPriority: true,
           title: 'Captured Motion / Node 3644',
           meta: 'img_3644.mov / residual passage / image carrier active',
           size: 'medium',
@@ -410,6 +412,7 @@
           kind: 'video',
           src: MEDIA.mirroredForest.src,
           poster: MEDIA.screenshot1.src,
+          preloadPriority: true,
           title: 'Captured Motion / Mirrored Forest',
           meta: 'operator approach / signal index drift / motion fragment active',
           size: 'large',
@@ -500,6 +503,7 @@
           kind: 'video',
           src: MEDIA.videoOutput.src,
           poster: MEDIA.screenshot1.src,
+          preloadPriority: true,
           title: 'Captured Motion / Output Relay',
           meta: 'video-output...mov / archive export / right field',
           size: 'medium',
@@ -647,7 +651,7 @@
       video.setAttribute('loop', '');
       video.setAttribute('playsinline', '');
       video.setAttribute('webkit-playsinline', '');
-      video.preload = node.id === OPENING_PRIORITY_VIDEO_ID ? 'auto' : 'metadata';
+      video.preload = (node.id === OPENING_PRIORITY_VIDEO_ID || node.preloadPriority) ? 'auto' : 'metadata';
       video.src = node.src;
       if (node.degradeLevel === 1) {
         video.playbackRate = 0.55 + Math.random() * 0.15;
@@ -784,7 +788,13 @@ function renderOpeningNode() {
           const rect = video.getBoundingClientRect();
           const centerY = rect.top + rect.height / 2;
           const dist = Math.abs(centerY - window.innerHeight / 2);
-          const isNear = rect.bottom > 0 && rect.top < window.innerHeight;
+          const isNear = rect.bottom > -window.innerHeight * 0.35 && rect.top < window.innerHeight * 1.35;
+          const isPreloadZone = rect.bottom > -window.innerHeight * 0.75 && rect.top < window.innerHeight * 1.75;
+
+          if (isPreloadZone && video.readyState < 2) {
+            video.preload = 'auto';
+            try { video.load(); } catch (e) {}
+          }
 
           if (isNear && dist < bestDist) {
             best = video;
