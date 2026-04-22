@@ -228,8 +228,8 @@
       display: block;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      background: transparent;
+      object-fit: contain;
+      background: black;
     }
 
     .caption {
@@ -676,22 +676,42 @@ function renderOpeningNode() {
     'mobile-link-index'
   ].map(id => MOBILE_NODES.find(n => n.id === id)).filter(Boolean);
 
-  abovePrimary.forEach(n => openingNodeEl.appendChild(createNodeElement({ ...n, degradeLevel: 0 })));
-
   const centerEl = createNodeElement({ ...centerNode, degradeLevel: 0 });
   centerEl.id = 'mmnt-anchor';
   openingNodeEl.appendChild(centerEl);
   centerEl.classList.add('is-visible');
 
-  belowPrimary.forEach(n => openingNodeEl.appendChild(createNodeElement({ ...n, degradeLevel: 0 })));
-
-  setTimeout(() => {
+  requestAnimationFrame(() => {
     const anchor = document.getElementById('mmnt-anchor');
     if (anchor) anchor.scrollIntoView({ block: 'center' });
-  }, 100);
+  });
+
+  window.setTimeout(() => {
+    abovePrimary.slice().reverse().forEach(n => {
+      openingNodeEl.insertBefore(
+        createNodeElement({ ...n, degradeLevel: 0 }),
+        centerEl
+      );
+    });
+
+    belowPrimary.forEach(n => {
+      openingNodeEl.appendChild(createNodeElement({ ...n, degradeLevel: 0 }));
+    });
+
+    observeNodeVisibility();
+  }, 240);
 }
 
     function renderArchiveStream() {
+      // All nodes except MMNT
+      const primaryNodes = MOBILE_NODES.filter(n => n.id !== OPENING_PRIORITY_VIDEO_ID);
+
+      // First pass: full variety, no degradation
+      primaryNodes.forEach(n => {
+        archiveStreamEl.appendChild(createNodeElement({ ...n, degradeLevel: 0 }));
+      });
+
+      // Select a smaller subset for echoes (strong visuals only)
       const echoSourceIds = [
         'mobile-video-e9fc-surface',
         'mobile-video-mirrored',
