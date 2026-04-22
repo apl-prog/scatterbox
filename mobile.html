@@ -23,6 +23,7 @@
       background: var(--bg);
       color: var(--fg);
       font-family: monospace;
+      overflow-x: hidden;
     }
 
     body::after {
@@ -94,9 +95,7 @@
 
     .opening-node {
       min-height: 100svh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: block;
       opacity: 1;
       transition: opacity 500ms ease, transform 500ms ease;
       padding: 24px 0;
@@ -120,13 +119,6 @@
       pointer-events: auto;
     }
 
-    .opening-spacer {
-      height: 62svh;
-    }
-
-    .opening-tail {
-      height: 52svh;
-    }
 
     .node {
       margin-bottom: 28px;
@@ -627,22 +619,21 @@
     function renderOpeningNode() {
       const openingNode = MOBILE_NODES.find(node => node.id === OPENING_PRIORITY_VIDEO_ID);
       if (!openingNode) return;
+
       openingNodeEl.innerHTML = '';
 
-      const abovePrimary = MOBILE_NODES.slice(1,5).map(n => ({ ...n, degradeLevel: 0 }));
-      const aboveEcho1 = abovePrimary.map(n => cloneWithDegrade(n, 1));
-      const aboveEcho2 = abovePrimary.map(n => cloneWithDegrade(n, 2));
+      // Create upper content (so you can scroll up)
+      const above = MOBILE_NODES.slice(1,5).map(n => ({ ...n, degradeLevel: 0 }));
+      above.forEach(n => openingNodeEl.appendChild(createNodeElement(n)));
 
-      aboveEcho2.forEach(n => openingNodeEl.appendChild(createNodeElement(n)));
-      aboveEcho1.forEach(n => openingNodeEl.appendChild(createNodeElement(n)));
-      abovePrimary.forEach(n => openingNodeEl.appendChild(createNodeElement(n)));
-
+      // Opening MMNT node
       const openingArticle = createNodeElement({ ...openingNode, degradeLevel: 0 });
       openingNodeEl.appendChild(openingArticle);
       openingArticle.classList.add('is-visible');
 
-      const belowPrimary = MOBILE_NODES.slice(5,10).map(n => ({ ...n, degradeLevel: 0 }));
-      belowPrimary.forEach(n => openingNodeEl.appendChild(createNodeElement(n)));
+      // Create lower content
+      const below = MOBILE_NODES.slice(5,10).map(n => ({ ...n, degradeLevel: 0 }));
+      below.forEach(n => openingNodeEl.appendChild(createNodeElement(n)));
     }
 
     function renderArchiveStream() {
