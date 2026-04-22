@@ -140,6 +140,16 @@
       transform: translateY(0) scale(1);
     }
 
+    .node.degrade-1 {
+      opacity: 0.85;
+      filter: contrast(0.9) saturate(0.8);
+    }
+
+    .node.degrade-2 {
+      opacity: 0.6;
+      filter: contrast(0.8) saturate(0.6);
+    }
+
     .node.large { width: 100%; }
     .node.medium { width: min(100%, 340px); }
     .node.small { width: min(82%, 250px); }
@@ -509,7 +519,8 @@
 
     function createNodeElement(node) {
       const article = document.createElement('article');
-      article.className = `node ${node.size || 'medium'} align-${node.align || 'center'}`;
+      let degradeClass = node.degradeLevel === 1 ? 'degrade-1' : node.degradeLevel === 2 ? 'degrade-2' : '';
+      article.className = `node ${node.size || 'medium'} align-${node.align || 'center'} ${degradeClass}`;
       article.dataset.nodeId = node.id;
       article.dataset.kind = node.kind;
 
@@ -601,63 +612,49 @@
       video.setAttribute('webkit-playsinline', '');
       video.preload = node.id === OPENING_PRIORITY_VIDEO_ID ? 'auto' : 'metadata';
       video.src = node.src;
+      if (node.degradeLevel === 1) video.playbackRate = 0.7;
+      if (node.degradeLevel === 2) video.playbackRate = 0.5;
       if (!node.useFirstFramePoster) {
         video.poster = node.poster || MEDIA.screenshot1.src;
       }
       return video;
     }
+    function cloneWithDegrade(node, level) {
+      return { ...node, id: node.id + '_echo_' + level + '_' + Math.random(), degradeLevel: level };
+    }
+
 
     function renderOpeningNode() {
       const openingNode = MOBILE_NODES.find(node => node.id === OPENING_PRIORITY_VIDEO_ID);
       if (!openingNode) return;
       openingNodeEl.innerHTML = '';
 
-      const topSpacer = document.createElement('div');
-      topSpacer.className = 'opening-spacer';
-      openingNodeEl.appendChild(topSpacer);
+      const abovePrimary = MOBILE_NODES.slice(1,5).map(n => ({ ...n, degradeLevel: 0 }));
+      const aboveEcho1 = abovePrimary.map(n => cloneWithDegrade(n, 1));
+      const aboveEcho2 = abovePrimary.map(n => cloneWithDegrade(n, 2));
 
-      openingNodeEl.appendChild(createNodeElement(openingNode));
-      const openingArticle = openingNodeEl.querySelector('.node');
-      if (openingArticle) openingArticle.classList.add('is-visible');
+      aboveEcho2.forEach(n => openingNodeEl.appendChild(createNodeElement(n)));
+      aboveEcho1.forEach(n => openingNodeEl.appendChild(createNodeElement(n)));
+      abovePrimary.forEach(n => openingNodeEl.appendChild(createNodeElement(n)));
 
-      const tailSpacer = document.createElement('div');
-      tailSpacer.className = 'opening-tail';
-      openingNodeEl.appendChild(tailSpacer);
+      const openingArticle = createNodeElement({ ...openingNode, degradeLevel: 0 });
+      openingNodeEl.appendChild(openingArticle);
+      openingArticle.classList.add('is-visible');
+
+      const belowPrimary = MOBILE_NODES.slice(5,10).map(n => ({ ...n, degradeLevel: 0 }));
+      belowPrimary.forEach(n => openingNodeEl.appendChild(createNodeElement(n)));
     }
 
     function renderArchiveStream() {
-      const remaining = MOBILE_NODES.filter(node => node.id !== OPENING_PRIORITY_VIDEO_ID);
+      const base = MOBILE_NODES.slice(10);
 
-      const tunedOrder = [
-        'mobile-video-e9fc-surface',
-        'mobile-text-warning',
-        'mobile-video-mirrored',
-        'mobile-still-0053',
-        'mobile-video-3644',
-        'mobile-link-index',
-        'mobile-video-carapace',
-        'mobile-micro-0201',
-        'mobile-video-3665',
-        'mobile-still-liberandos-best',
-        'mobile-text-residue',
-        'mobile-video-output',
-        'mobile-video-arctic',
-        'mobile-video-tetrahedron',
-        'mobile-video-vid3',
-        'mobile-link-exit'
-      ];
+      const primary = base.map(n => ({ ...n, degradeLevel: 0 }));
+      const echo1 = primary.map(n => cloneWithDegrade(n, 1));
+      const echo2 = primary.map(n => cloneWithDegrade(n, 2));
 
-      const ordered = tunedOrder
-        .map(id => remaining.find(node => node.id === id))
-        .filter(Boolean);
-
-      remaining
-        .filter(node => !tunedOrder.includes(node.id))
-        .forEach(node => ordered.push(node));
-
-      ordered.forEach(node => {
-        archiveStreamEl.appendChild(createNodeElement(node));
-      });
+      primary.forEach(n => archiveStreamEl.appendChild(createNodeElement(n)));
+      echo1.forEach(n => archiveStreamEl.appendChild(createNodeElement(n)));
+      echo2.forEach(n => archiveStreamEl.appendChild(createNodeElement(n)));
     }
 
     function revealArchiveStream() {
