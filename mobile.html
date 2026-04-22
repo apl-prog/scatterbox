@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liberandos Archive / Mobile Drift</title>
+  <style>
+    :root {
+      --bg: #06070a;
+      --fg: #eaeaea;
+      --muted: rgba(235,235,235,0.72);
+      --soft: rgba(220,220,220,0.56);
+      --line: rgba(255,255,255,0.14);
+      --link: rgba(210,220,255,0.84);
+      --max: 420px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: monospace;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at center, transparent 56%, rgba(6,7,10,0.5) 100%);
+      z-index: 50;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .shell {
+      position: relative;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 16px 14px 90px;
+      z-index: 1;
+    }
+
+    .hud {
+      position: sticky;
+      top: 12px;
+      z-index: 40;
+      display: inline-block;
+      margin-bottom: 16px;
+      padding: 8px 10px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.96);
+      background: rgba(6,7,10,0.62);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+    }
+
+    .opening {
+      margin-bottom: 30px;
+    }
+
+    .eyebrow {
+      margin-bottom: 8px;
+      font-size: 10px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--soft);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.15;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .subhead {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .opening-node {
+      opacity: 1;
+      transition: opacity 500ms ease, transform 500ms ease;
+    }
+
+    .opening-node .media-frame {
+      aspect-ratio: 4 / 5;
+      min-height: 300px;
+    }
+
+    .archive-stream {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 900ms ease;
+    }
+
+    .archive-stream.is-live {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .node {
+      margin-bottom: 28px;
+      opacity: 0;
+      transform: translateY(18px) scale(0.985);
+      transition: opacity 700ms ease, transform 700ms ease, filter 700ms ease;
+    }
+
+    .node.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .node.large { width: 100%; }
+    .node.medium { width: min(100%, 340px); }
+    .node.small { width: min(82%, 250px); }
+
+    .node.align-left { margin-right: auto; }
+    .node.align-center { margin-left: auto; margin-right: auto; }
+    .node.align-right { margin-left: auto; }
+
+    .card {
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 10px 10px 12px;
+      background: rgba(255,255,255,0.01);
+    }
+
+    .record-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--soft);
+    }
+
+    .record-label {
+      color: rgba(255,255,255,0.92);
+    }
+
+    .media-frame {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .media-frame.portrait {
+      aspect-ratio: 4 / 5;
+    }
+
+    .media-frame.square {
+      aspect-ratio: 1 / 1;
+    }
+
+    .media-frame img,
+    .media-frame video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: transparent;
+    }
+
+    .caption {
+      padding-top: 8px;
+      font-size: 10px;
+      line-height: 1.4;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .caption-title {
+      margin-bottom: 3px;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .caption-meta {
+      color: var(--soft);
+    }
+
+    .phase-text {
+      white-space: pre-line;
+      line-height: 1.5;
+      color: rgba(238,238,238,0.92);
+      font-size: 12px;
+    }
+
+    .record-copy {
+      margin: 10px 0 0;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .linkrow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      margin-top: 10px;
+    }
+
+    .archive-link {
+      color: var(--link);
+      border-bottom: 1px solid rgba(210,220,255,0.3);
+      padding-bottom: 1px;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .tiny {
+      font-size: 10px;
+      line-height: 1.45;
+      color: var(--soft);
+    }
+
+    .buffer-note {
+      margin-top: 6px;
+      font-size: 9px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: rgba(220,220,220,0.5);
+    }
+
+    .hidden-audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="hud" id="statusline">signal present / touch to engage dnbd loop</div>
+
+    <section class="opening">
+      <div class="eyebrow">Liberandos / Mobile Drift / Partial Reception</div>
+      <h1>endless drift, vertical coherence.</h1>
+      <p class="subhead">A reduced archive for smaller screens. One opening relay arrives first, audio engages on touch, and the remaining fragments enter more slowly below.</p>
+    </section>
+
+    <section id="opening-node" class="opening-node"></section>
+
+    <section id="archive-stream" class="archive-stream"></section>
+  </div>
+
+  <audio id="audio-bed" class="hidden-audio" preload="none"></audio>
+  <audio id="audio-layer-a" class="hidden-audio" preload="none"></audio>
+
+  <script>
+    const statuslineEl = document.getElementById('statusline');
+    const openingNodeEl = document.getElementById('opening-node');
+    const archiveStreamEl = document.getElementById('archive-stream');
+    const audioBedEl = document.getElementById('audio-bed');
+    const audioLayerAEl = document.getElementById('audio-layer-a');
+
+    const OPENING_PRIORITY_VIDEO_ID = 'mobile-video-mmnt';
+
+    let MOBILE_NODES = [];
+    let dnbdCrossfadeInterval = null;
+    let dnbdActiveDeck = 'A';
+    let dnbdIsCrossfading = false;
+    let audioStarted = false;
+    let archiveRevealed = false;
+
+    const MEDIA = {
+      screenshot1: { kind: 'image', src: 'Screenshot 1.png' },
+      img0053: { kind: 'image', src: 'IMG_0053.jpeg' },
+      screenshot4: { kind: 'image', src: 'Screenshot 4.png' },
+      liberandosBest: { kind: 'image', src: 'LIberandos Best small.jpeg' },
+      fullsize: { kind: 'image', src: 'FullSizeRender.jpeg' },
+      mmnt: { kind: 'video', src: 'MMNT_20260325_201644865.mov' },
+      e9fc: { kind: 'video', src: 'E9FC76C1-9221-450F-9BF1-479E8FB99CF4.mov' },
+      vid3644: { kind: 'video', src: 'IMG_3644.mov' },
+      mirroredForest: { kind: 'video', src: 'Mirrored Forest Winter Region Operator approaches.mov' },
+      carapace: { kind: 'video', src: 'Carapace Canyons RIO restart.mov' },
+      vid3665: { kind: 'video', src: 'IMG_3665.mov' },
+      videoOutput: { kind: 'video', src: 'video-output-AB9B6D41-E995-457B-BF63-9FCB1FB8707D.mov' },
+      arcticDeploy: { kind: 'video', src: 'Arctic depository RIO deploy #2.mov' },
+      tetrahedron: { kind: 'video', src: 'tetrahedron.mov' },
+      vid3: { kind: 'video', src: 'vid3.mov' },
+      micro0201: { kind: 'video', src: 'IMG_0201.mov' },
+      micro4121: { kind: 'video', src: 'IMG_4121.mov' }
+    };
+
+    function createMobileNodes() {
+      return [
+        {
+          id: 'mobile-video-mmnt',
+          kind: 'video',
+          src: MEDIA.mmnt.src,
+          poster: null,
+          useFirstFramePoster: true,
+          title: 'Captured Motion / MMNT Node',
+          meta: 'mmnt_20260325...mov / vertical relay / field fragment',
+          size: 'large',
+          align: 'center',
+          mediaClass: 'portrait',
+          isOpeningNode: true
+        },
+        {
+          id: 'mobile-video-e9fc-surface',
+          kind: 'video',
+          src: MEDIA.e9fc.src,
+          poster: MEDIA.screenshot1.src,
+          title: 'Captured Motion / Partial Surface',
+          meta: 'e9fc76...mov / relay quality unstable / archive layer 02',
+          size: 'medium',
+          align: 'left',
+          mediaClass: '',
+          linkTargets: [
+            { href: 'https://protocols.liberandos.com/orange/', label: 'orange ↗', external: true },
+            { href: 'https://protocols.liberandos.com/phase/', label: 'phase ↗', external: true }
+          ]
+        },
+        {
+          id: 'mobile-video-3644',
+          kind: 'video',
+          src: MEDIA.vid3644.src,
+          poster: MEDIA.screenshot1.src,
+          title: 'Captured Motion / Node 3644',
+          meta: 'img_3644.mov / residual passage / image carrier active',
+          size: 'medium',
+          align: 'right',
+          mediaClass: ''
+        },
+        {
+          id: 'mobile-text-warning',
+          kind: 'text',
+          title: 'Warning Trace / Annotated',
+          meta: 'repeating caution / interference marker',
+          text: 'attention drifts\nsignal weakens\nreacquire the field',
+          size: 'medium',
+          align: 'left'
+        },
+        {
+          id: 'mobile-video-mirrored',
+          kind: 'video',
+          src: MEDIA.mirroredForest.src,
+          poster: MEDIA.screenshot1.src,
+          title: 'Captured Motion / Mirrored Forest',
+          meta: 'operator approach / signal index drift / motion fragment active',
+          size: 'large',
+          align: 'center',
+          mediaClass: '',
+          linkTargets: [
+            { href: 'https://protocols.liberandos.com/ascension/', label: 'ascension ↗', external: true },
+            { href: 'https://protocols.liberandos.com/Archive/aps/', label: 'archive aps ↗', external: true }
+          ]
+        },
+        {
+          id: 'mobile-still-0053',
+          kind: 'image',
+          src: MEDIA.img0053.src,
+          title: 'Recovered Still / Node 0053',
+          meta: 'img_0053.jpeg / low-band image / crossfade residue',
+          size: 'medium',
+          align: 'left',
+          mediaClass: ''
+        },
+        {
+          id: 'mobile-video-carapace',
+          kind: 'video',
+          src: MEDIA.carapace.src,
+          poster: MEDIA.screenshot1.src,
+          title: 'Captured Motion / Carapace Restart',
+          meta: 'carapace canyons rio restart.mov / canyon relay / restart cycle',
+          size: 'medium',
+          align: 'right',
+          mediaClass: ''
+        },
+        {
+          id: 'mobile-link-index',
+          kind: 'link',
+          title: 'Index Drift / Link Relay',
+          meta: 'receiver engaged / duplicate fragment detected / correspondence unstable',
+          size: 'medium',
+          align: 'center',
+          linkTargets: [
+            { href: 'https://protocols.liberandos.com/orange/', label: 'orange ↗', external: true },
+            { href: 'https://protocols.liberandos.com/phase/', label: 'phase ↗', external: true },
+            { href: 'https://protocols.liberandos.com/ascension/', label: 'ascension ↗', external: true }
+          ]
+        },
+        {
+          id: 'mobile-micro-0201',
+          kind: 'video',
+          src: MEDIA.micro0201.src,
+          poster: MEDIA.screenshot1.src,
+          title: 'Captured Motion / Node 0201',
+          meta: 'img_0201.mov / micro relay',
+          size: 'small',
+          align: 'left',
+          mediaClass: 'portrait'
+        },
+        {
+          id: 'mobile-video-3665',
+          kind: 'video',
+          src: MEDIA.vid3665.src,
+          poster: MEDIA.screenshot1.src,
+          title: 'Captured Motion / Node 3665',
+          meta: 'img_3665.mov / mid-field fragment / relay unstable',
+          size: 'medium',
+          align: 'right',
+          mediaClass: ''
+        },
+        {
+          id: 'mobile-still-liberandos-best',
+          kind: 'image',
+          src: MEDIA.liberandosBest.src,
+          title: 'Recovered Still / Liberandos Best',
+          meta: 'liberandos best small.jpeg / portrait anchor / still residue',
+          size: 'small',
+          align: 'center',
+          mediaClass: 'portrait'
+        },
+        {
+          id: 'mobile-text-residue',
+          kind: 'text',
+          title: 'Signal Fragment / Residual Trace',
+          meta: 'archival residue / repeated return / unstable note',
+          text: 'old transmissions return\nnoise gathers at the edge\nresidue remains',
+          size: 'medium',
+          align: 'left'
+        },
+        {
+          id: 'mobile-video-output',
+          kind: 'video',
+          src: MEDIA.videoOutput.src,
+          poster: MEDIA.screenshot1.src,
+          title: 'Captured Motion / Output Relay',
+          meta: 'video-output...mov / archive export / right field',
+          size: 'medium',
+          align: 'right',
+          mediaClass: ''
+        },
+        {
+          id: 'mobile-video-arctic',
+          kind: 'video',
+          src: MEDIA.arcticDeploy.src,
+          poster: MEDIA.screenshot1.src,
+          title: 'Captured Motion / Arctic Deploy',
+          meta: 'arctic depository rio deploy #2.mov / cold relay / outer field',
+          size: 'medium',
+          align: 'left',
+          mediaClass: ''
+        },
+        {
+          id: 'mobile-video-tetrahedron',
+          kind: 'video',
+          src: MEDIA.tetrahedron.src,
+          poster: MEDIA.screenshot1.src,
+          title: 'Captured Motion / Tetrahedron',
+          meta: 'tetrahedron.mov / lower-field geometry relay',
+          size: 'small',
+          align: 'right',
+          mediaClass: 'square'
+        },
+        {
+          id: 'mobile-video-vid3',
+          kind: 'video',
+          src: MEDIA.vid3.src,
+          poster: MEDIA.screenshot1.src,
+          title: 'Captured Motion / vid3',
+          meta: 'vid3.mov / outer field fragment',
+          size: 'medium',
+          align: 'center',
+          mediaClass: ''
+        },
+        {
+          id: 'mobile-link-exit',
+          kind: 'link',
+          title: 'Surface Relay / Exit Node',
+          meta: 'modern client / open full transmission / return surface',
+          size: 'medium',
+          align: 'center',
+          linkTargets: [
+            { href: 'https://liberandos.com', label: 'surface relay ↗', external: true },
+            { href: 'https://protocols.liberandos.com/phase/', label: 'phase ↗', external: true }
+          ]
+        }
+      ];
+    }
+
+    function createNodeElement(node) {
+      const article = document.createElement('article');
+      article.className = `node ${node.size || 'medium'} align-${node.align || 'center'}`;
+      article.dataset.nodeId = node.id;
+      article.dataset.kind = node.kind;
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      article.appendChild(card);
+
+      const header = document.createElement('div');
+      header.className = 'record-header';
+      header.innerHTML = `
+        <div class="record-label">${node.title || node.id}</div>
+        <div>${node.kind}</div>
+      `;
+      card.appendChild(header);
+
+      if (node.kind === 'image' || node.kind === 'video') {
+        const frame = document.createElement('div');
+        frame.className = `media-frame ${node.mediaClass || ''}`.trim();
+        const media = createMediaElement(node);
+        frame.appendChild(media);
+        card.appendChild(frame);
+
+        const note = document.createElement('div');
+        note.className = 'buffer-note';
+        note.textContent = node.meta || '';
+        card.appendChild(note);
+      }
+
+      if (node.kind === 'text') {
+        const text = document.createElement('div');
+        text.className = 'phase-text';
+        text.textContent = node.text || '';
+        card.appendChild(text);
+      }
+
+      if (node.kind === 'link') {
+        const meta = document.createElement('div');
+        meta.className = 'phase-text';
+        meta.textContent = node.meta || '';
+        card.appendChild(meta);
+      }
+
+      if ((node.kind === 'image' || node.kind === 'video' || node.kind === 'text') && node.meta) {
+        const caption = document.createElement('div');
+        caption.className = 'caption';
+        caption.innerHTML = `
+          <div class="caption-meta">${node.meta}</div>
+        `;
+        card.appendChild(caption);
+      }
+
+      if (node.linkTargets && node.linkTargets.length) {
+        const row = document.createElement('div');
+        row.className = 'linkrow';
+        node.linkTargets.forEach(link => {
+          const a = document.createElement('a');
+          a.className = 'archive-link';
+          a.href = link.href;
+          a.textContent = link.label;
+          if (link.external) {
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+          }
+          row.appendChild(a);
+        });
+        card.appendChild(row);
+      }
+
+      return article;
+    }
+
+    function createMediaElement(node) {
+      if (node.kind === 'image') {
+        const img = document.createElement('img');
+        img.loading = 'lazy';
+        img.src = node.src;
+        img.alt = node.title || node.id;
+        return img;
+      }
+
+      const video = document.createElement('video');
+      video.muted = true;
+      video.defaultMuted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.setAttribute('muted', '');
+      video.setAttribute('loop', '');
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+      video.preload = node.id === OPENING_PRIORITY_VIDEO_ID ? 'auto' : 'metadata';
+      video.src = node.src;
+      if (!node.useFirstFramePoster) {
+        video.poster = node.poster || MEDIA.screenshot1.src;
+      }
+      return video;
+    }
+
+    function renderOpeningNode() {
+      const openingNode = MOBILE_NODES.find(node => node.id === OPENING_PRIORITY_VIDEO_ID);
+      if (!openingNode) return;
+      openingNodeEl.innerHTML = '';
+      openingNodeEl.appendChild(createNodeElement(openingNode));
+      const openingArticle = openingNodeEl.querySelector('.node');
+      if (openingArticle) openingArticle.classList.add('is-visible');
+    }
+
+    function renderArchiveStream() {
+      const remaining = MOBILE_NODES.filter(node => node.id !== OPENING_PRIORITY_VIDEO_ID);
+
+      const tunedOrder = [
+        'mobile-video-e9fc-surface',
+        'mobile-text-warning',
+        'mobile-video-mirrored',
+        'mobile-still-0053',
+        'mobile-video-3644',
+        'mobile-link-index',
+        'mobile-video-carapace',
+        'mobile-micro-0201',
+        'mobile-video-3665',
+        'mobile-still-liberandos-best',
+        'mobile-text-residue',
+        'mobile-video-output',
+        'mobile-video-arctic',
+        'mobile-video-tetrahedron',
+        'mobile-video-vid3',
+        'mobile-link-exit'
+      ];
+
+      const ordered = tunedOrder
+        .map(id => remaining.find(node => node.id === id))
+        .filter(Boolean);
+
+      remaining
+        .filter(node => !tunedOrder.includes(node.id))
+        .forEach(node => ordered.push(node));
+
+      ordered.forEach(node => {
+        archiveStreamEl.appendChild(createNodeElement(node));
+      });
+    }
+
+    function revealArchiveStream() {
+      if (archiveRevealed) return;
+      archiveRevealed = true;
+      archiveStreamEl.classList.add('is-live');
+      observeNodeVisibility();
+      observeActiveVideo();
+    }
+
+    function observeNodeVisibility() {
+      const nodes = Array.from(document.querySelectorAll('.node'));
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      }, {
+        threshold: 0.16,
+        rootMargin: '0px 0px -6% 0px'
+      });
+
+      nodes.forEach(node => observer.observe(node));
+    }
+
+    function observeActiveVideo() {
+      const videos = Array.from(document.querySelectorAll('video'));
+      if (!videos.length) return;
+
+      function updateActiveVideo() {
+        let best = null;
+        let bestDist = Infinity;
+
+        videos.forEach(video => {
+          const rect = video.getBoundingClientRect();
+          const centerY = rect.top + rect.height / 2;
+          const dist = Math.abs(centerY - window.innerHeight / 2);
+          const isNear = rect.bottom > 0 && rect.top < window.innerHeight;
+
+          if (isNear && dist < bestDist) {
+            best = video;
+            bestDist = dist;
+          }
+        });
+
+        videos.forEach(video => {
+          if (video === best) {
+            if (video.readyState < 2) {
+              video.preload = 'auto';
+              try { video.load(); } catch (e) {}
+            }
+            if (video.paused) {
+              video.play().catch(() => {});
+            }
+          } else if (!video.paused) {
+            video.pause();
+          }
+        });
+      }
+
+      window.addEventListener('scroll', updateActiveVideo, { passive: true });
+      window.addEventListener('resize', updateActiveVideo);
+      updateActiveVideo();
+    }
+
+    function initAudioSources() {
+      audioBedEl.src = 'dnbd.m4a';
+      audioLayerAEl.src = 'dnbd.m4a';
+      audioBedEl.load();
+      audioLayerAEl.load();
+    }
+
+    function setStatus(text) {
+      statuslineEl.textContent = text;
+    }
+
+    function triggerAudioGestureStart() {
+      if (audioStarted) return;
+      startAudio();
+    }
+
+    function fadeAudio(audioEl, from, to, duration, onDone) {
+      const start = performance.now();
+      function step(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        audioEl.volume = from + (to - from) * progress;
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else if (onDone) {
+          onDone();
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    function forceDNBDHandoff() {
+      if (dnbdIsCrossfading) return;
+
+      const active = dnbdActiveDeck === 'A' ? audioBedEl : audioLayerAEl;
+      const next = dnbdActiveDeck === 'A' ? audioLayerAEl : audioBedEl;
+
+      dnbdIsCrossfading = true;
+      next.pause();
+      next.currentTime = 0;
+      next.volume = 0;
+      next.muted = false;
+
+      next.play().then(() => {
+        fadeAudio(next, 0, 0.26, 600);
+        fadeAudio(active, active.volume, 0, 600, () => {
+          active.pause();
+          active.currentTime = 0;
+        });
+        window.setTimeout(() => {
+          dnbdActiveDeck = dnbdActiveDeck === 'A' ? 'B' : 'A';
+          dnbdIsCrossfading = false;
+        }, 650);
+      }).catch(() => {
+        dnbdIsCrossfading = false;
+      });
+    }
+
+    function startDNBDCrossfadeLoop() {
+      if (dnbdCrossfadeInterval) clearInterval(dnbdCrossfadeInterval);
+
+      dnbdCrossfadeInterval = window.setInterval(() => {
+        const active = dnbdActiveDeck === 'A' ? audioBedEl : audioLayerAEl;
+        const next = dnbdActiveDeck === 'A' ? audioLayerAEl : audioBedEl;
+
+        if (dnbdIsCrossfading) return;
+        if (!active.duration || !isFinite(active.duration)) return;
+
+        const remaining = active.duration - active.currentTime;
+        if (remaining <= 6.5) {
+          dnbdIsCrossfading = true;
+          next.pause();
+          next.currentTime = 0;
+          next.volume = 0;
+          next.muted = false;
+          next.play().then(() => {
+            fadeAudio(next, 0, 0.26, 5500);
+            fadeAudio(active, active.volume, 0, 5500, () => {
+              active.pause();
+              active.currentTime = 0;
+            });
+            window.setTimeout(() => {
+              dnbdActiveDeck = dnbdActiveDeck === 'A' ? 'B' : 'A';
+              dnbdIsCrossfading = false;
+            }, 5600);
+          }).catch(() => {
+            dnbdIsCrossfading = false;
+          });
+        }
+      }, 250);
+    }
+
+    function startAudio() {
+      if (audioStarted) return;
+      audioStarted = true;
+
+      audioBedEl.pause();
+      audioLayerAEl.pause();
+      try { audioBedEl.load(); } catch (e) {}
+      try { audioLayerAEl.load(); } catch (e) {}
+      audioBedEl.currentTime = 0;
+      audioLayerAEl.currentTime = 0;
+      audioBedEl.muted = false;
+      audioLayerAEl.muted = false;
+      audioBedEl.loop = false;
+      audioLayerAEl.loop = false;
+      audioBedEl.volume = 0;
+      audioLayerAEl.volume = 0;
+      dnbdActiveDeck = 'A';
+      dnbdIsCrossfading = false;
+      audioBedEl.onended = forceDNBDHandoff;
+      audioLayerAEl.onended = forceDNBDHandoff;
+
+      audioBedEl.play().then(() => {
+        fadeAudio(audioBedEl, 0, 0.26, 900);
+        startDNBDCrossfadeLoop();
+        setStatus('receiver engaged / dnbd loop active');
+        window.setTimeout(() => {
+          revealArchiveStream();
+        }, 2100);
+      }).catch((err) => {
+        console.error('DNBD start failed', err);
+        setStatus('audio blocked / tap again');
+        audioStarted = false;
+      });
+    }
+
+    function initMobileArchive() {
+      MOBILE_NODES = createMobileNodes();
+      initAudioSources();
+      renderOpeningNode();
+      renderArchiveStream();
+      observeNodeVisibility();
+      window.addEventListener('click', triggerAudioGestureStart, { once: false });
+      window.addEventListener('touchstart', triggerAudioGestureStart, { once: false, passive: true });
+    }
+
+    initMobileArchive();
+  </script>
+</body>
+</html>
