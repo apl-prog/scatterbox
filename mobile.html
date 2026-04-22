@@ -667,74 +667,57 @@ function renderOpeningNode() {
 
   openingNodeEl.innerHTML = '';
 
-  const abovePrimary = [
-    'mobile-video-e9fc-surface',
-    'mobile-text-warning',
-    'mobile-video-mirrored'
-  ].map(id => MOBILE_NODES.find(n => n.id === id)).filter(Boolean);
-
-  const belowPrimary = [
-    'mobile-still-0053',
-    'mobile-video-3644',
-    'mobile-video-carapace',
-    'mobile-link-index'
-  ].map(id => MOBILE_NODES.find(n => n.id === id)).filter(Boolean);
-
   const centerEl = createNodeElement({ ...centerNode, degradeLevel: 0 });
   centerEl.id = 'mmnt-anchor';
   openingNodeEl.appendChild(centerEl);
   centerEl.classList.add('is-visible');
-
-  requestAnimationFrame(() => {
-    const anchor = document.getElementById('mmnt-anchor');
-    if (anchor) anchor.scrollIntoView({ block: 'center' });
-  });
-
-  window.setTimeout(() => {
-    abovePrimary.slice().reverse().forEach(n => {
-      openingNodeEl.insertBefore(
-        createNodeElement({ ...n, degradeLevel: 0 }),
-        centerEl
-      );
-    });
-
-    belowPrimary.forEach(n => {
-      openingNodeEl.appendChild(createNodeElement({ ...n, degradeLevel: 0 }));
-    });
-
-    observeNodeVisibility();
-  }, 240);
 }
 
     function renderArchiveStream() {
-      // All nodes except MMNT
-      const primaryNodes = MOBILE_NODES.filter(n => n.id !== OPENING_PRIORITY_VIDEO_ID);
+      const primaryOrder = [
+        'mobile-video-e9fc-surface',
+        'mobile-video-mirrored',
+        'mobile-video-output',
+        'mobile-video-3644',
+        'mobile-video-3665',
+        'mobile-video-arctic',
+        'mobile-video-vid3',
+        'mobile-video-tetrahedron',
+        'mobile-micro-0201',
+        'mobile-still-liberandos-best',
+        'mobile-text-warning',
+        'mobile-text-residue',
+        'mobile-link-index',
+        'mobile-link-exit',
+        'mobile-still-0053',
+        'mobile-video-carapace'
+      ];
 
-      // First pass: full variety, no degradation
+      const primaryNodes = primaryOrder
+        .map(id => MOBILE_NODES.find(n => n.id === id))
+        .filter(Boolean);
+
       primaryNodes.forEach(n => {
         archiveStreamEl.appendChild(createNodeElement({ ...n, degradeLevel: 0 }));
       });
 
-      // Select a smaller subset for echoes (strong visuals only)
       const echoSourceIds = [
         'mobile-video-e9fc-surface',
         'mobile-video-mirrored',
-        'mobile-still-0053',
+        'mobile-video-output',
         'mobile-video-3644',
         'mobile-video-carapace',
-        'mobile-video-output'
+        'mobile-still-0053'
       ];
 
       const echoSources = echoSourceIds
         .map(id => MOBILE_NODES.find(n => n.id === id))
         .filter(Boolean);
 
-      // Echo pass 1
       echoSources.forEach(n => {
         archiveStreamEl.appendChild(createNodeElement(cloneWithDegrade(n, 1)));
       });
 
-      // Echo pass 2
       echoSources.forEach(n => {
         archiveStreamEl.appendChild(createNodeElement(cloneWithDegrade(n, 2)));
       });
