@@ -210,13 +210,17 @@
 
     .media-frame {
       width: 100%;
-      aspect-ratio: 16 / 9;
+      aspect-ratio: 4 / 5;
       overflow: hidden;
       background: transparent;
     }
 
     .media-frame.portrait {
       aspect-ratio: 4 / 5;
+    }
+
+    .media-frame.landscape {
+      aspect-ratio: 16 / 9;
     }
 
     .media-frame.square {
@@ -406,7 +410,7 @@
           meta: 'operator approach / signal index drift / motion fragment active',
           size: 'large',
           align: 'center',
-          mediaClass: '',
+          mediaClass: 'landscape',
           linkTargets: [
             { href: 'https://protocols.liberandos.com/ascension/', label: 'ascension ↗', external: true },
             { href: 'https://protocols.liberandos.com/Archive/aps/', label: 'archive aps ↗', external: true }
@@ -431,7 +435,7 @@
           meta: 'carapace canyons rio restart.mov / canyon relay / restart cycle',
           size: 'medium',
           align: 'right',
-          mediaClass: ''
+          mediaClass: 'landscape'
         },
         {
           id: 'mobile-link-index',
@@ -496,7 +500,7 @@
           meta: 'video-output...mov / archive export / right field',
           size: 'medium',
           align: 'right',
-          mediaClass: ''
+          mediaClass: 'landscape'
         },
         {
           id: 'mobile-video-arctic',
@@ -529,7 +533,7 @@
           meta: 'vid3.mov / outer field fragment',
           size: 'medium',
           align: 'center',
-          mediaClass: ''
+          mediaClass: 'landscape'
         },
         {
           id: 'mobile-link-exit',
