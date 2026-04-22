@@ -43,16 +43,17 @@
       position: relative;
       max-width: var(--max);
       margin: 0 auto;
-      padding: 16px 14px 90px;
+      padding: 0 14px 90px;
       z-index: 1;
     }
 
     .hud {
-      position: sticky;
-      top: 12px;
+      position: fixed;
+      left: 14px;
+      top: 14px;
       z-index: 40;
       display: inline-block;
-      margin-bottom: 16px;
+      margin-bottom: 0;
       padding: 8px 10px;
       font-size: 12px;
       letter-spacing: 0.08em;
@@ -64,7 +65,7 @@
     }
 
     .opening {
-      margin-bottom: 30px;
+      display: none;
     }
 
     .eyebrow {
@@ -92,24 +93,39 @@
     }
 
     .opening-node {
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       opacity: 1;
       transition: opacity 500ms ease, transform 500ms ease;
+      padding: 24px 0;
     }
 
     .opening-node .media-frame {
       aspect-ratio: 4 / 5;
-      min-height: 300px;
+      min-height: 58svh;
+      max-height: 74svh;
     }
 
     .archive-stream {
       opacity: 0;
       pointer-events: none;
       transition: opacity 900ms ease;
+      margin-top: 0;
     }
 
     .archive-stream.is-live {
       opacity: 1;
       pointer-events: auto;
+    }
+
+    .opening-spacer {
+      height: 62svh;
+    }
+
+    .opening-tail {
+      height: 52svh;
     }
 
     .node {
@@ -247,12 +263,6 @@
 <body>
   <div class="shell">
     <div class="hud" id="statusline">signal present / touch to engage dnbd loop</div>
-
-    <section class="opening">
-      <div class="eyebrow">Liberandos / Mobile Drift / Partial Reception</div>
-      <h1>endless drift, vertical coherence.</h1>
-      <p class="subhead">A reduced archive for smaller screens. One opening relay arrives first, audio engages on touch, and the remaining fragments enter more slowly below.</p>
-    </section>
 
     <section id="opening-node" class="opening-node"></section>
 
@@ -601,9 +611,18 @@
       const openingNode = MOBILE_NODES.find(node => node.id === OPENING_PRIORITY_VIDEO_ID);
       if (!openingNode) return;
       openingNodeEl.innerHTML = '';
+
+      const topSpacer = document.createElement('div');
+      topSpacer.className = 'opening-spacer';
+      openingNodeEl.appendChild(topSpacer);
+
       openingNodeEl.appendChild(createNodeElement(openingNode));
       const openingArticle = openingNodeEl.querySelector('.node');
       if (openingArticle) openingArticle.classList.add('is-visible');
+
+      const tailSpacer = document.createElement('div');
+      tailSpacer.className = 'opening-tail';
+      openingNodeEl.appendChild(tailSpacer);
     }
 
     function renderArchiveStream() {
