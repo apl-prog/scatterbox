@@ -23,6 +23,7 @@
       background: var(--bg);
       color: var(--fg);
       font-family: monospace;
+      overflow-x: hidden;
     }
 
     body::after {
@@ -94,9 +95,7 @@
 
     .opening-node {
       min-height: 100svh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: block;
       opacity: 1;
       transition: opacity 500ms ease, transform 500ms ease;
       padding: 24px 0;
@@ -120,6 +119,14 @@
       pointer-events: auto;
     }
 
+    .opening-node > *,
+    .archive-stream > * {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      clear: both;
+    }
+
     .opening-spacer {
       height: 62svh;
     }
@@ -129,6 +136,7 @@
     }
 
     .node {
+      display: block;
       margin-bottom: 28px;
       opacity: 0;
       transform: translateY(18px) scale(0.985);
@@ -140,13 +148,44 @@
       transform: translateY(0) scale(1);
     }
 
+    .node.degrade-1 {
+      filter: contrast(0.92) saturate(0.75);
+    }
+
+    .node.degrade-2 {
+      filter: contrast(0.8) saturate(0.52);
+      margin-bottom: 62px;
+    }
+
+    .node.degrade-1 .caption,
+    .node.degrade-1 .buffer-note {
+      opacity: 0.58;
+    }
+
+    .node.degrade-2 .caption,
+    .node.degrade-2 .buffer-note,
+    .node.degrade-2 .linkrow {
+      opacity: 0.18;
+    }
+
     .node.large { width: 100%; }
     .node.medium { width: min(100%, 340px); }
     .node.small { width: min(82%, 250px); }
 
-    .node.align-left { margin-right: auto; }
-    .node.align-center { margin-left: auto; margin-right: auto; }
-    .node.align-right { margin-left: auto; }
+    .node.align-left {
+      margin-left: 0;
+      margin-right: auto;
+    }
+
+    .node.align-center {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .node.align-right {
+      margin-left: auto;
+      margin-right: 0;
+    }
 
     .card {
       border: 1px solid rgba(255,255,255,0.08);
@@ -509,7 +548,8 @@
 
     function createNodeElement(node) {
       const article = document.createElement('article');
-      article.className = `node ${node.size || 'medium'} align-${node.align || 'center'}`;
+      const degradeClass = node.degradeLevel === 1 ? 'degrade-1' : node.degradeLevel === 2 ? 'degrade-2' : '';
+      article.className = `node ${node.size || 'medium'} align-${node.align || 'center'} ${degradeClass}`.trim();
       article.dataset.nodeId = node.id;
       article.dataset.kind = node.kind;
 
@@ -601,73 +641,78 @@
       video.setAttribute('webkit-playsinline', '');
       video.preload = node.id === OPENING_PRIORITY_VIDEO_ID ? 'auto' : 'metadata';
       video.src = node.src;
+      if (node.degradeLevel === 1) video.playbackRate = 0.6;
+      if (node.degradeLevel === 2) video.playbackRate = 0.4;
       if (!node.useFirstFramePoster) {
         video.poster = node.poster || MEDIA.screenshot1.src;
       }
       return video;
     }
 
-    function renderOpeningNode() {
-  const openingNode = MOBILE_NODES.find(node => node.id === OPENING_PRIORITY_VIDEO_ID);
-  if (!openingNode) return;
+    function cloneWithDegrade(node, level) {
+      return {
+        ...node,
+        id: `${node.id}-echo-${level}-${Math.random().toString(36).slice(2, 7)}`,
+        degradeLevel: level
+      };
+    }
+
+function renderOpeningNode() {
+  const centerNode = MOBILE_NODES.find(n => n.id === OPENING_PRIORITY_VIDEO_ID);
+  if (!centerNode) return;
 
   openingNodeEl.innerHTML = '';
 
-  // Above content (so scroll up exists)
-  const above = MOBILE_NODES.slice(1,5).map(n => ({ ...n, degradeLevel: 0 }));
-  above.forEach(n => openingNodeEl.appendChild(createNodeElement(n)));
+  const abovePrimary = [
+    'mobile-video-e9fc-surface',
+    'mobile-text-warning',
+    'mobile-video-mirrored'
+  ].map(id => MOBILE_NODES.find(n => n.id === id)).filter(Boolean);
 
-  // Opening MMNT node
-  const openingArticle = createNodeElement({ ...openingNode, degradeLevel: 0 });
-  openingArticle.id = 'mmnt-anchor';
-  openingNodeEl.appendChild(openingArticle);
-  openingArticle.classList.add('is-visible');
+  const belowPrimary = [
+    'mobile-still-0053',
+    'mobile-video-3644',
+    'mobile-video-carapace',
+    'mobile-link-index'
+  ].map(id => MOBILE_NODES.find(n => n.id === id)).filter(Boolean);
 
-  // Below content
-  const below = MOBILE_NODES.slice(5,10).map(n => ({ ...n, degradeLevel: 0 }));
-  below.forEach(n => openingNodeEl.appendChild(createNodeElement(n)));
+  abovePrimary.forEach(n => openingNodeEl.appendChild(createNodeElement({ ...n, degradeLevel: 0 })));
 
-  // Scroll to MMNT after render so user can go up/down
+  const centerEl = createNodeElement({ ...centerNode, degradeLevel: 0 });
+  centerEl.id = 'mmnt-anchor';
+  openingNodeEl.appendChild(centerEl);
+  centerEl.classList.add('is-visible');
+
+  belowPrimary.forEach(n => openingNodeEl.appendChild(createNodeElement({ ...n, degradeLevel: 0 })));
+
   setTimeout(() => {
     const anchor = document.getElementById('mmnt-anchor');
-    if (anchor) {
-      anchor.scrollIntoView({ block: 'center' });
-    }
+    if (anchor) anchor.scrollIntoView({ block: 'center' });
   }, 100);
 }
 
     function renderArchiveStream() {
-      const remaining = MOBILE_NODES.filter(node => node.id !== OPENING_PRIORITY_VIDEO_ID);
-
-      const tunedOrder = [
+      const echoSourceIds = [
         'mobile-video-e9fc-surface',
-        'mobile-text-warning',
         'mobile-video-mirrored',
         'mobile-still-0053',
         'mobile-video-3644',
-        'mobile-link-index',
         'mobile-video-carapace',
-        'mobile-micro-0201',
-        'mobile-video-3665',
-        'mobile-still-liberandos-best',
-        'mobile-text-residue',
-        'mobile-video-output',
-        'mobile-video-arctic',
-        'mobile-video-tetrahedron',
-        'mobile-video-vid3',
-        'mobile-link-exit'
+        'mobile-video-output'
       ];
 
-      const ordered = tunedOrder
-        .map(id => remaining.find(node => node.id === id))
+      const echoSources = echoSourceIds
+        .map(id => MOBILE_NODES.find(n => n.id === id))
         .filter(Boolean);
 
-      remaining
-        .filter(node => !tunedOrder.includes(node.id))
-        .forEach(node => ordered.push(node));
+      // Echo pass 1
+      echoSources.forEach(n => {
+        archiveStreamEl.appendChild(createNodeElement(cloneWithDegrade(n, 1)));
+      });
 
-      ordered.forEach(node => {
-        archiveStreamEl.appendChild(createNodeElement(node));
+      // Echo pass 2
+      echoSources.forEach(n => {
+        archiveStreamEl.appendChild(createNodeElement(cloneWithDegrade(n, 2)));
       });
     }
 
