@@ -334,41 +334,6 @@
     let dnbdIsCrossfading = false;
     let audioStarted = false;
     let archiveRevealed = false;
-    let audioContext = null;
-    let audioSourceA = null;
-    let audioSourceB = null;
-    let audioFilterNode = null;
-    function initAudioFilterChain() {
-      if (audioContext) return;
-
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) return;
-
-      audioContext = new AudioContextClass();
-      audioFilterNode = audioContext.createBiquadFilter();
-      audioFilterNode.type = 'lowpass';
-      audioFilterNode.frequency.value = 20000;
-      audioFilterNode.Q.value = 0.0001;
-
-      audioSourceA = audioContext.createMediaElementSource(audioBedEl);
-      audioSourceB = audioContext.createMediaElementSource(audioLayerAEl);
-
-      audioSourceA.connect(audioFilterNode);
-      audioSourceB.connect(audioFilterNode);
-      audioFilterNode.connect(audioContext.destination);
-    }
-
-    function updateAudioFilterByScroll() {
-      if (!audioContext || !audioFilterNode) return;
-
-      const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
-      const scrollRatio = Math.min(Math.max(window.scrollY / maxScroll, 0), 1);
-      const cutoff = 20000 - (18500 * scrollRatio);
-      const now = audioContext.currentTime;
-
-      audioFilterNode.frequency.cancelScheduledValues(now);
-      audioFilterNode.frequency.linearRampToValueAtTime(cutoff, now + 0.18);
-    }
 
     const MEDIA = {
       screenshot1: { kind: 'image', src: 'Screenshot 1.png' },
@@ -959,10 +924,6 @@ function renderOpeningNode() {
 
       audioBedEl.pause();
       audioLayerAEl.pause();
-      initAudioFilterChain();
-      if (audioContext && audioContext.state === 'suspended') {
-        audioContext.resume().catch(() => {});
-      }
       try { audioBedEl.load(); } catch (e) {}
       try { audioLayerAEl.load(); } catch (e) {}
       audioBedEl.currentTime = 0;
@@ -986,7 +947,6 @@ function renderOpeningNode() {
         }
 
         fadeAudio(audioBedEl, 0, 0.26, 900);
-        updateAudioFilterByScroll();
         startDNBDCrossfadeLoop();
         setStatus('receiver engaged / dnbd loop active');
         window.setTimeout(() => {
@@ -1005,8 +965,6 @@ function renderOpeningNode() {
       renderOpeningNode();
       renderArchiveStream();
       observeNodeVisibility();
-      window.addEventListener('scroll', updateAudioFilterByScroll, { passive: true });
-      window.addEventListener('resize', updateAudioFilterByScroll);
       window.addEventListener('click', triggerAudioGestureStart, { once: false });
       window.addEventListener('touchstart', triggerAudioGestureStart, { once: false, passive: true });
     }
