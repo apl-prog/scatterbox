@@ -819,50 +819,6 @@ function renderOpeningNode() {
       window.addEventListener('resize', updateActiveVideo);
       updateActiveVideo();
     }
-      const videos = Array.from(document.querySelectorAll('video'));
-      if (!videos.length) return;
-
-      function updateActiveVideo() {
-        let best = null;
-        let bestDist = Infinity;
-
-        videos.forEach(video => {
-          const rect = video.getBoundingClientRect();
-          const centerY = rect.top + rect.height / 2;
-          const dist = Math.abs(centerY - window.innerHeight / 2);
-          const isNear = rect.bottom > -window.innerHeight * 0.35 && rect.top < window.innerHeight * 1.35;
-          const isPreloadZone = rect.bottom > -window.innerHeight * 0.75 && rect.top < window.innerHeight * 1.75;
-
-          if (isPreloadZone && video.readyState < 2) {
-            video.preload = 'auto';
-            try { video.load(); } catch (e) {}
-          }
-
-          if (isNear && dist < bestDist) {
-            best = video;
-            bestDist = dist;
-          }
-        });
-
-        videos.forEach(video => {
-          if (video === best) {
-            if (video.readyState < 2) {
-              video.preload = 'auto';
-              try { video.load(); } catch (e) {}
-            }
-            if (video.paused) {
-              video.play().catch(() => {});
-            }
-          } else if (!video.paused) {
-            video.pause();
-          }
-        });
-      }
-
-      window.addEventListener('scroll', updateActiveVideo, { passive: true });
-      window.addEventListener('resize', updateActiveVideo);
-      updateActiveVideo();
-    }
 
     function initAudioSources() {
       audioBedEl.src = 'dnbd.m4a';
