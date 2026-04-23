@@ -417,7 +417,7 @@
           meta: 'operator approach / signal index drift / motion fragment active',
           size: 'large',
           align: 'center',
-          mediaClass: 'landscape',
+          mediaClass: 'portrait',
           linkTargets: [
             { href: 'https://protocols.liberandos.com/ascension/', label: 'ascension ↗', external: true },
             { href: 'https://protocols.liberandos.com/Archive/aps/', label: 'archive aps ↗', external: true }
@@ -508,7 +508,7 @@
           meta: 'video-output...mov / archive export / right field',
           size: 'medium',
           align: 'right',
-          mediaClass: 'landscape'
+          mediaClass: 'portrait'
         },
         {
           id: 'mobile-video-arctic',
@@ -604,14 +604,6 @@
         card.appendChild(meta);
       }
 
-      if ((node.kind === 'image' || node.kind === 'video' || node.kind === 'text') && node.meta) {
-        const caption = document.createElement('div');
-        caption.className = 'caption';
-        caption.innerHTML = `
-          <div class="caption-meta">${node.meta}</div>
-        `;
-        card.appendChild(caption);
-      }
 
       if (node.linkTargets && node.linkTargets.length) {
         const row = document.createElement('div');
@@ -776,7 +768,57 @@ function renderOpeningNode() {
       nodes.forEach(node => observer.observe(node));
     }
 
+    function ensureVideoPrimed(video) {
+      if (!video) return;
+      if (video.dataset.loadRequested === 'true') return;
+      video.dataset.loadRequested = 'true';
+      video.preload = 'auto';
+      try { video.load(); } catch (e) {}
+    }
+
     function observeActiveVideo() {
+      const videos = Array.from(document.querySelectorAll('video'));
+      if (!videos.length) return;
+
+      function updateActiveVideo() {
+        let best = null;
+        let bestDist = Infinity;
+
+        videos.forEach(video => {
+          const rect = video.getBoundingClientRect();
+          const centerY = rect.top + rect.height / 2;
+          const dist = Math.abs(centerY - window.innerHeight / 2);
+          const isNear = rect.bottom > -window.innerHeight * 0.35 && rect.top < window.innerHeight * 1.35;
+          const isPreloadZone = rect.bottom > -window.innerHeight * 0.75 && rect.top < window.innerHeight * 1.75;
+
+          if (isPreloadZone && video.readyState < 2) {
+            ensureVideoPrimed(video);
+          }
+
+          if (isNear && dist < bestDist) {
+            best = video;
+            bestDist = dist;
+          }
+        });
+
+        videos.forEach(video => {
+          if (video === best) {
+            if (video.readyState < 2) {
+              ensureVideoPrimed(video);
+            }
+            if (video.paused) {
+              video.play().catch(() => {});
+            }
+          } else if (!video.paused) {
+            video.pause();
+          }
+        });
+      }
+
+      window.addEventListener('scroll', updateActiveVideo, { passive: true });
+      window.addEventListener('resize', updateActiveVideo);
+      updateActiveVideo();
+    }
       const videos = Array.from(document.querySelectorAll('video'));
       if (!videos.length) return;
 
@@ -935,6 +977,12 @@ function renderOpeningNode() {
       audioLayerAEl.onended = forceDNBDHandoff;
 
       audioBedEl.play().then(() => {
+        const openingVideo = openingNodeEl.querySelector('video');
+        if (openingVideo) {
+          ensureVideoPrimed(openingVideo);
+          openingVideo.play().catch(() => {});
+        }
+
         fadeAudio(audioBedEl, 0, 0.26, 900);
         startDNBDCrossfadeLoop();
         setStatus('receiver engaged / dnbd loop active');
