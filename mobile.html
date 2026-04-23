@@ -63,6 +63,34 @@
       background: rgba(6,7,10,0.62);
       border: 1px solid var(--line);
       backdrop-filter: blur(8px);
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    function toggleAudioPlayback(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      if (!audioStarted) {
+        startAudio();
+        return;
+      }
+
+      const active = dnbdActiveDeck === 'A' ? audioBedEl : audioLayerAEl;
+      const inactive = dnbdActiveDeck === 'A' ? audioLayerAEl : audioBedEl;
+      const isPlaying = (!active.paused && active.volume > 0.01) || (!inactive.paused && inactive.volume > 0.01);
+
+      if (isPlaying) {
+        active.pause();
+        inactive.pause();
+        setStatus('signal paused / touch to resume dnbd');
+      } else {
+        active.play().then(() => {
+          setStatus('receiver engaged / dnbd loop active');
+        }).catch(() => {});
+      }
     }
 
     .opening {
@@ -342,6 +370,7 @@
       liberandosBest: { kind: 'video', src: 'IMG_4886.mp4' },
       fullsize: { kind: 'image', src: 'FullSizeRender.jpeg' },
       mmnt: { kind: 'video', src: 'MMNT_20260325_201644865.mp4' },
+      mmntAlt: { kind: 'video', src: 'MMNT_20260226_215843869.mp4' },
       e9fc: { kind: 'video', src: 'E9FC76C1-9221-450F-9BF1-479E8FB99CF4.mp4' },
       vid3644: { kind: 'video', src: 'IMG_3644.mp4' },
       mirroredForest: { kind: 'video', src: 'Mirrored Forest Winter Region Operator approaches.mp4' },
@@ -368,7 +397,8 @@
           size: 'large',
           align: 'center',
           mediaClass: 'portrait',
-          isOpeningNode: true
+          isOpeningNode: true,
+          playbackRateBase: 0.7
         },
         {
           id: 'mobile-video-e9fc-surface',
@@ -481,6 +511,17 @@
           size: 'medium',
           align: 'right',
           mediaClass: ''
+        },
+        {
+          id: 'mobile-video-mmnt-alt',
+          kind: 'video',
+          src: MEDIA.mmntAlt.src,
+          poster: MEDIA.screenshot1.src,
+          title: 'Captured Motion / MMNT Alt',
+          meta: 'mmnt_20260226_215843869.mp4 / lower-field fragment / motion relay',
+          size: 'medium',
+          align: 'left',
+          mediaClass: 'portrait'
         },
         {
           id: 'mobile-still-liberandos-best',
@@ -697,6 +738,7 @@ function renderOpeningNode() {
         'mobile-video-3644',
         'mobile-link-exit',
         'mobile-video-3665',
+        'mobile-video-mmnt-alt',
         'mobile-video-arctic',
         'mobile-video-vid3',
         'mobile-video-tetrahedron',
@@ -965,6 +1007,8 @@ function renderOpeningNode() {
       renderOpeningNode();
       renderArchiveStream();
       observeNodeVisibility();
+      statuslineEl.addEventListener('click', toggleAudioPlayback);
+      statuslineEl.addEventListener('touchstart', toggleAudioPlayback, { passive: false });
       window.addEventListener('click', triggerAudioGestureStart, { once: false });
       window.addEventListener('touchstart', triggerAudioGestureStart, { once: false, passive: true });
     }
